@@ -1,8 +1,10 @@
+import io
 import os
 import smtplib
+import zipfile
 from collections import defaultdict
-from email.mime.text import MIMEText
 from datetime import datetime
+from email.mime.text import MIMEText
 
 import numpy as np
 import pandas as pd
@@ -85,6 +87,8 @@ with MANAGE:
         pd.read_csv("data/" + "-".join(info) + ".csv") for info in group_filtered
     ]
 
+    placeholder = st.empty()
+
     checkbox, _, display, _, delete = st.columns([2, 6, 3, 6, 3])
     with checkbox:
         st.subheader("导出结果")
@@ -105,6 +109,9 @@ with MANAGE:
                     key=" - ".join(info),
                     use_container_width=True,
                     num_rows="dynamic",
+                    on_change=lambda: df_list[idx].to_csv(
+                        "data/" + "-".join(info) + ".csv", index=False
+                    ),
                 )
         with delete:
             with st.expander("删除"):
@@ -112,6 +119,19 @@ with MANAGE:
                 if st.button("确认删除", key=" ".join(info), type="primary"):
                     os.remove("data/" + "-".join(info) + ".csv")
                     st.experimental_rerun()
+
+    ziped_data = io.BytesIO()
+    with zipfile.ZipFile(ziped_data, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
+        for info in group_filtered:
+            with open("data/" + "-".join(info) + ".csv", "r") as data_file:
+                zip_file.writestr(
+                    "-".join(info) + ".csv",
+                    data_file.read(),
+                    compress_type=zipfile.ZIP_DEFLATED,
+                )
+    placeholder.download_button(
+        "下载所选数据", ziped_data.getvalue(), "raw_data.zip", "application/zip"
+    )
 
 with SUMMARY:
     weekday_zh2en = {
