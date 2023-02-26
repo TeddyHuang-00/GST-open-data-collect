@@ -23,7 +23,7 @@ if "login" not in st.session_state:
     def send_email(subject, body, sender, recipients, password):
         msg = MIMEText(body)
         msg["Subject"] = subject
-        msg["From"] = f"DO NOT REPLY <{sender}>"
+        msg["From"] = f"NO REPLY <{sender}>"
         msg["To"] = recipients
         smtp_server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
         smtp_server.login(sender, password)
