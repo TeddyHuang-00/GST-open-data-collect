@@ -109,12 +109,17 @@ def fit_and_plot():
     ax.set_ylabel("$Abs_{340}$(a.u.)")
     ax.set_title(f"Fit of Abs data, R$^2$={R_squared:f}")
     ax.legend()
-    st.pyplot(fig)
-    st.markdown(
-        load_text("./assets/param.md")
-        .replace("PLACE_HOLDER_ESTIMATED_K", f"{K_estimate:.3f}")
-        .replace("PLACE_HOLDER_ESTIMATED_S", f"{S_estimate:.3f}")
-    )
+
+    # Output result
+    L, R = st.columns(2)
+    with L:
+        st.pyplot(fig)
+    with R:
+        st.markdown(
+            load_text("./assets/param.md")
+            .replace("PLACE_HOLDER_ESTIMATED_K", f"{K_estimate:.3f}")
+            .replace("PLACE_HOLDER_ESTIMATED_S", f"{S_estimate:.3f}")
+        )
     return K_estimate, S_estimate
 
 
