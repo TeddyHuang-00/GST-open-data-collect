@@ -28,12 +28,12 @@ if "template" not in st.session_state:
     st.session_state["template"] = pd.read_csv("./template.csv")
 
 
-@st.cache
+@st.cache_data
 def load_data() -> pd.DataFrame:
     return pd.read_csv(st.session_state["DATA"]).dropna()
 
 
-@st.cache
+@st.cache_data
 def save_data(name: str, ID: str, group: str, cls: str, data: pd.DataFrame) -> None:
     data.set_index(data.columns[0]).to_csv(f"./data/{cls}-{group}-{name}-{ID}.csv")
 
