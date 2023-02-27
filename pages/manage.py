@@ -16,7 +16,7 @@ st.set_page_config(
 )
 st.title("⚙️后台管理")
 
-if "login" not in st.session_state:
+if st.secrets["admin"]["require_auth"] and "login" not in st.session_state:
 
     def get_pin(addr):
         dt = datetime.now()
