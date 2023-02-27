@@ -20,8 +20,8 @@ if "login" not in st.session_state:
 
     def get_pin(addr):
         dt = datetime.now()
-        pin = str(hash(dt.strftime("%Y-%m") + addr))
-        for s in st.secrets["admin"]["salt"]:
+        pin = str(hash(f"{dt.year}-{dt.month}" + addr))
+        for s in sorted(st.secrets["admin"]["salt"]):
             pin = str(hash(pin + s))
         return pin[-6:]
 
