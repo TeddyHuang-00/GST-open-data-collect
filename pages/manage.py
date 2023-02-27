@@ -25,7 +25,9 @@ if "login" not in st.session_state:
             pin = str(hash(pin + s))
         return pin[-6:]
 
-    def send_pin_code(recipients, pincode, sender, password):
+    def send_pin_code(recipients, pincode):
+        sender = st.secrets["email"]["account"]
+        password = st.secrets["email"]["passwd"]
         body = (
             f"Your temporary pin code is:\n\n"
             f"{pincode}\n\n"
@@ -39,7 +41,6 @@ if "login" not in st.session_state:
         smtp_server.login(sender, password)
         smtp_server.sendmail(sender, recipients, msg.as_string())
         smtp_server.quit()
-        st.success("邮件已重新发送")
 
     _, MIDDLE, _ = st.columns(3)
 
@@ -64,12 +65,7 @@ if "login" not in st.session_state:
                 if st.form_submit_button("发送 PIN 码"):
                     if addr in st.secrets["admin"]["address"]:
                         st.info("邮件正在发送中，请耐心等候")
-                        send_pin_code(
-                            addr,
-                            get_pin(addr),
-                            st.secrets["email"]["account"],
-                            st.secrets["email"]["passwd"],
-                        )
+                        send_pin_code(addr, get_pin(addr))
                         st.success("邮件已发送！请您注意查收邮箱")
                     else:
                         st.error("您不是管理员")
