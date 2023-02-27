@@ -34,7 +34,7 @@ def save_data(name: str, ID: str, group: str, cls: str, data: pd.DataFrame) -> N
     data.set_index(data.columns[0]).to_csv(f"./data/{cls}-{group}-{name}-{ID}.csv")
 
 
-# @st.cache_data
+@st.cache_data
 def load_text(file_path: str):
     with open(file_path, "r") as f:
         return f.read()
