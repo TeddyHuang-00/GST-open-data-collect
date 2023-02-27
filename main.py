@@ -161,20 +161,22 @@ with DATA:
             label="提交数据",
             help="新提交数据会自动覆盖此前记录",
         )
-        if submit and is_valid_input():
-            save_data(
-                st.session_state["NAME"],
-                st.session_state["ID"],
-                st.session_state["GROUP"],
-                st.session_state["CLASS"],
-                st.session_state["DATA"],
-            )
-            st.session_state["IS_DATA_VALID"] = True
+        if submit:
+            st.session_state["IS_DATA_VALID"] = is_valid_input()
+            if st.session_state["IS_DATA_VALID"]:
+                save_data(
+                    st.session_state["NAME"],
+                    st.session_state["ID"],
+                    st.session_state["GROUP"],
+                    st.session_state["CLASS"],
+                    st.session_state["DATA"],
+                )
 
 
 with RESULT:
     if not st.session_state.get("IS_DATA_VALID", False):
         st.warning("请先提交数据，再查看拟合结果", icon="⚠️")
+        st.stop()
     with st.expander("数据选择", expanded=False):
         data = st.session_state["DATA"]
         st.selectbox(label="选择处理数据", options=data.columns[1:], key="Choice")
