@@ -11,7 +11,10 @@ import pandas as pd
 import streamlit as st
 from scipy.optimize import curve_fit
 
-st.title("后台管理")
+st.set_page_config(
+    "后台管理", layout="wide", page_icon="⚙️", initial_sidebar_state="collapsed"
+)
+st.title("⚙️后台管理")
 
 if "login" not in st.session_state:
 
@@ -22,9 +25,14 @@ if "login" not in st.session_state:
             pin = str(hash(pin + s))
         return pin[-6:]
 
-    def send_email(subject, body, sender, recipients, password):
+    def send_pin_code(recipients, pincode, sender, password):
+        body = (
+            f"Your temporary pin code is:\n\n"
+            f"{pincode}\n\n"
+            f"Valid until the end of {datetime.now().year}/{datetime.now().month:02d}."
+        )
         msg = MIMEText(body)
-        msg["Subject"] = subject
+        msg["Subject"] = "Your temporary pin code"
         msg["From"] = f"NO REPLY <{sender}>"
         msg["To"] = recipients
         smtp_server = smtplib.SMTP_SSL("smtp.gmail.com", 465)
@@ -33,28 +41,39 @@ if "login" not in st.session_state:
         smtp_server.quit()
         st.success("邮件已重新发送")
 
-    st.subheader("管理员登陆")
-    with st.form("管理员登陆"):
-        addr = st.text_input("邮箱地址")
-        pin = st.text_input(
-            "验证码", type="password", help="如果您第一次登陆，请先点击“登陆”按钮获取验证码，验证码当月有效"
-        )
-        if st.form_submit_button("登陆"):
-            if addr in st.secrets["admin"]["address"]:
-                if pin == get_pin(addr):
-                    st.session_state["login"] = True
-                    st.experimental_rerun()
-                else:
-                    st.error("验证码错误，邮件正在重新发送，请耐心等候")
-                    send_email(
-                        "Your temporary pin code",
-                        "Your temporary pin code is:\n\n" + get_pin(addr),
-                        st.secrets["email"]["account"],
-                        addr,
-                        st.secrets["email"]["passwd"],
-                    )
-            else:
-                st.error("您不是管理员")
+    _, MIDDLE, _ = st.columns(3)
+
+    with MIDDLE:
+        st.subheader("身份验证")
+        returning, firsttime = st.tabs(["登陆", "获取 PIN 码"])
+        with returning:
+            with st.form("管理员登陆"):
+                addr = st.text_input("邮箱")
+                pin = st.text_input(
+                    "验证码", type="password", help="如果您第一次登陆，请先点击“获取 PIN 码”获取验证码，验证码当月有效"
+                )
+                if st.form_submit_button("登陆"):
+                    if addr in st.secrets["admin"]["address"] and pin == get_pin(addr):
+                        st.session_state["login"] = True
+                        st.experimental_rerun()
+                    else:
+                        st.error("账户或验证码错误，如果您忘记 PIN 码，或 PIN 码已过期，请点击“获取 PIN 码”重新获取")
+        with firsttime:
+            with st.form("获取PIN码"):
+                addr = st.text_input("邮箱")
+                if st.form_submit_button("发送 PIN 码"):
+                    if addr in st.secrets["admin"]["address"]:
+                        st.info("邮件正在发送中，请耐心等候")
+                        send_pin_code(
+                            addr,
+                            get_pin(addr),
+                            st.secrets["email"]["account"],
+                            st.secrets["email"]["passwd"],
+                        )
+                        st.success("邮件已发送！请您注意查收邮箱")
+                    else:
+                        st.error("您不是管理员")
+    # Make sure the page is not run until authentication is complete
     st.stop()
 
 
