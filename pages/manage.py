@@ -256,7 +256,7 @@ with SUMMARY:
         dedup = collect.drop_duplicates(
             subset=["Enzyme_Activity_tot", "Day", "Group", "Method"]
         )
-        group_means = dedup.groupby(["Day", "Group"]).mean()["Enzyme_Activity_avg"]
+        group_means = dedup.groupby(["Day", "Group"])["Enzyme_Activity_avg"].mean()
         mean_means = group_means.mean()
         norm_params = group_means / mean_means
         # normalize data based on group
