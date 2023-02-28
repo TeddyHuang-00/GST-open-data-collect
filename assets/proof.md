@@ -81,6 +81,8 @@ $$
 
 代入 $Abs_{340}=[P]\cdot\varepsilon\cdot L$ 则有:
 
-$$Abs_{340}=\left(1-e^{-K_{tot}\cdot t}\right)S_0\cdot\varepsilon\cdot L$$
+$$
+Abs_{340}=\left(1-e^{-K_{tot}\cdot t}\right)S_0\cdot\varepsilon\cdot L
+$$
 
 其中 $\varepsilon=9.6 L\cdot mmol^{-1}\cdot cm^{-1}$，$L=1 cm$，$S_0$ 可根据加入 GSH 的量推算（由于体系中其他因素的影响，这一项也可作为待定项），因此待定系数仅有 $K_{tot}$ 一项，我们可以据此对数据进行模型拟合来求得所有待定项
