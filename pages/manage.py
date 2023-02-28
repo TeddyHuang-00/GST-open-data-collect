@@ -114,9 +114,7 @@ with MANAGE:
     for idx, (info, df) in enumerate(zip(group_filtered, df_list)):
         checkbox, display, delete = st.columns([1, 7, 2])
         with checkbox:
-            st.checkbox(
-                "导出结果", value=True, key=info_list[idx][-1], label_visibility="hidden"
-            )
+            st.checkbox("导出结果", value=True, key=info[-1], label_visibility="hidden")
         with display:
             with st.expander(" - ".join(info)):
                 df_list[idx] = st.experimental_data_editor(
@@ -138,12 +136,13 @@ with MANAGE:
     ziped_data = io.BytesIO()
     with zipfile.ZipFile(ziped_data, "a", zipfile.ZIP_DEFLATED, False) as zip_file:
         for info in group_filtered:
-            with open("data/" + "-".join(info) + ".csv", "r") as data_file:
-                zip_file.writestr(
-                    "-".join(info) + ".csv",
-                    data_file.read(),
-                    compress_type=zipfile.ZIP_DEFLATED,
-                )
+            if st.session_state[info[-1]]:
+                with open("data/" + "-".join(info) + ".csv", "r") as data_file:
+                    zip_file.writestr(
+                        "-".join(info) + ".csv",
+                        data_file.read(),
+                        compress_type=zipfile.ZIP_DEFLATED,
+                    )
     placeholder.download_button(
         "下载所选数据", ziped_data.getvalue(), "raw_data.zip", "application/zip"
     )
